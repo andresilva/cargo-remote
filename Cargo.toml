@@ -11,7 +11,7 @@ repository = "https://github.com/sgeisler/cargo-remote"
 edition = "2018"
 
 [dependencies]
-structopt = "0.2.18"
+structopt = "0.3.26"
 cargo_metadata = "0.14.2"
 log = "0.4.1"
 simple_logger = "1.3.0"
