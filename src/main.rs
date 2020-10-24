@@ -1,10 +1,11 @@
 use std::ffi::OsStr;
 use std::path::PathBuf;
 use std::process::{exit, Command, Stdio};
+
+use itertools::Itertools;
+use log::{debug, error, warn};
 use structopt::StructOpt;
 use toml::Value;
-
-use log::{debug, error, warn};
 
 const PROGRESS_FLAG: &str = "--info=progress2";
 
@@ -24,7 +25,7 @@ enum Opts {
             help = "Set remote environment variables. RUST_BACKTRACE, CC, LIB, etc. ",
             default_value = "RUST_BACKTRACE=1"
         )]
-        build_env: String,
+        build_env: Vec<String>,
 
         #[structopt(
             short = "d",
@@ -220,7 +221,7 @@ fn main() {
         env,
         rustup_default,
         build_path,
-        build_env,
+        build_env.into_iter().join(" "),
         command,
         options.join(" ")
     );
