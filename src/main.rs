@@ -55,14 +55,6 @@ enum Opts {
         #[structopt(short = "b", long)]
         build_env: Vec<String>,
 
-        /// Rustup default (stable|beta|nightly)
-        #[structopt(short = "d", long, default_value = "stable")]
-        rustup_default: String,
-
-        /// Environment profile.
-        #[structopt(short = "e", long, default_value = "/etc/profile")]
-        env: String,
-
         /// Transfer the target folder or specific file from that folder back
         /// to the local machine.
         #[structopt(short = "c", long)]
@@ -126,8 +118,6 @@ fn main() {
     let Opts::Remote {
         remote,
         mut build_env,
-        rustup_default,
-        env,
         copy_back,
         no_copy_lock,
         manifest_path,
@@ -169,7 +159,7 @@ fn main() {
             |p| OsStr::new(&p.name),
         );
 
-    let build_path_folder = "~/remote-builds/";
+    let build_path_folder = "~/remote-builds";
     let build_path = format!("{}/{}/", build_path_folder, project_name.to_string_lossy());
 
     debug!("Project name: {:?}", project_name);
@@ -217,7 +207,6 @@ fn main() {
     }
 
     debug!("Build ENV: {:?}", build_env);
-    debug!("Environment profile: {:?}", env);
     debug!("Build path: {:?}", build_path);
 
     build_env.extend(
@@ -227,9 +216,7 @@ fn main() {
     );
 
     let build_command = format!(
-        "source {}; rustup default {}; cd {}; {} cargo {}",
-        env,
-        rustup_default,
+        "cd {}; eval $(direnv export bash); {} cargo {}",
         build_path,
         build_env.into_iter().join(" "),
         remote_commands.into_commands().join(" "),
